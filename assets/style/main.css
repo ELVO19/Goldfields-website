@@ -1,0 +1,101 @@
+ .navbar{
+            background-color: goldenrod;
+            padding: 28px 20px;
+            border-radius: 25px;
+        }
+        .nav-menu{
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            align-items: center;
+        }
+        .nav-link {
+            color: darkred;
+            text-decoration: none;
+            font-size: 30px;
+            font-family: "Courier 10 Pitch";
+        }
+         .nav-link:hover{
+                background-color: slateblue;
+             padding: 15px;
+             border-radius: 10px;
+            }
+         .signup-btn{
+             background-color: indigo;
+             color: white;
+             font-size: 20px;
+             font-family: "JetBrains Mono ExtraBold";
+             cursor: pointer;
+         }
+           main{
+              background-color: dodgerblue;
+              padding: 20px;
+              margin: 20px auto;
+              max-width: 1000px;
+          }
+       h1{
+           color: white;
+           background-color: indigo;
+           padding: 18px;
+           border-radius: 15px;
+           text-align: center;
+           text-decoration: underline;
+       }
+       .hero-image{
+           background-image: url("../Goldfields/assets/images/old-school-building-7576490_1280.jpg");
+           background-size: cover;
+           background-position: center;
+           height: 450px;
+           border-radius: 15px;
+       }
+       .hero-text{
+           font-size: 35px;
+           text-align: center;
+           color: white;
+           font-family: Noto Sans Cuneiform;
+           font-weight: bold;
+           position: relative;
+           top: 40%;
+       }
+        .content{
+            color: red;
+            background-color: gold;
+            font-family: "Nimbus Roman";
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .vision{
+            background-color: chocolate;
+            color: blue;
+            text-decoration: dotted;
+            text-align: left;
+            font-family: "Droid Sans Fallback";
+            padding: 10px;
+        }
+        iframe{
+            width: 100%;
+            margin-bottom: 20px;
+            height: 350px;
+        }
+        .youtube{
+            display: flex;
+            gap: 60px;
+        }
+        footer{
+            color: darkred;
+        }
+        .about{
+            color: fuchsia;
+        }
+        .about-us h1{
+            color: aqua;
+            background-color: coral;
+        }
+        .about-us{
+            background-color: black;
+            color: aliceblue;
+            border-radius: 20px;
+            padding: 20px;
+        }
