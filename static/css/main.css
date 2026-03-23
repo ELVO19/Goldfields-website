@@ -1,0 +1,68 @@
+        /* Reset & Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { background-color: #fff8f0; color: #333; line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+
+        /* Header */
+        header { background-color: #ff6f61; color: white; padding: 20px 0; text-align: center; font-family: 'Playfair Display', serif; }
+        header h1 { font-size: 2.5rem; }
+
+        /* Navigation */
+        nav { background-color: #fff3ee; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        nav ul { display: flex; justify-content: center; flex-wrap: wrap; list-style: none; }
+        nav ul li { margin: 10px 20px; }
+        nav ul li a { color: #ff6f61; font-weight: bold; transition: color 0.3s; }
+        nav ul li a:hover { color: #ff3b2e; }
+        .btn-orange { background-color: #ff6f61; color: white; padding: 5px 15px; border-radius: 5px; transition: 0.3s; }
+        .btn-orange:hover { background-color: #ff3b2e; }
+
+        /* Footer */
+        footer { background-color: #ff6f61; color: white; text-align: center; padding: 20px 0; margin-top: 40px; }
+
+        /* Section default */
+        section { padding: 60px 20px; text-align: center; }
+        .features { display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; }
+        .feature-card { background: white; padding: 30px; border-radius: 15px; width: 250px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; }
+        .feature-card:hover { transform: translateY(-10px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .feature-card i { font-size: 3rem; color: #ff6f61; margin-bottom: 15px; }
+        .feature-card h3 { margin-bottom: 10px; font-family: 'Playfair Display', serif; }
+        .feature-card a { display: inline-block; margin-top: 10px; color: #ff6f61; font-weight: bold; }
+        .feature-card a:hover { color: #ff3b2e; }
+
+        /* Hero default (can be overridden) */
+        .hero { background: url('{% static "images/hero-image.jpg" %}') center/cover no-repeat; height: 400px; display: flex; justify-content: center; align-items: center; color: white; text-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+        .hero h2 { font-size: 3rem; }
+
+        /* Main Container */
+        .main-container { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+
+        h2 { color: var(--primary-orange); font-weight: 700; margin-bottom: 0.5rem; font-size: 2.5rem; }
+        .text-muted { color: var(--gray) !important; font-size: 1.1rem; margin-bottom: 2rem; }
+
+        /* Shared button styles */
+        .btn-add { background: linear-gradient(135deg, var(--primary-orange), var(--orange-light)); border-radius: 50px; padding: 12px 30px; font-weight: 600; color: white; text-decoration: none; display: inline-block; transition: all 0.3s ease; }
+        .btn-add:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4); color: white !important; }
+
+        /* Dish card shared styles */
+        .dish-card { background: var(--white); border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow: hidden; transition: all 0.4s ease; margin-bottom: 2rem; position: relative; }
+        .dish-card:hover { transform: translateY(-8px); box-shadow: 0 25px 60px rgba(255, 107, 53, 0.15); }
+        .dish-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary-orange), var(--orange-light)); }
+
+        img { width: 100%; height: 200px; border-radius: 20px; object-fit: cover; margin-bottom: 1.5rem; }
+        .card-title { color: #2D3748; font-weight: 700; font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .card-subtitle { color: var(--gray); font-size: 1rem; font-weight: 400; margin-bottom: 1rem; line-height: 1.5; }
+        .price-tag { background: linear-gradient(135deg, var(--primary-orange), var(--orange-light)); color: white; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; display: inline-block; margin: 1rem 0 1.5rem 0; }
+
+        .card-actions { display: flex; gap: 10px; margin-top: 1.5rem; }
+        .btn-action { flex: 1; border-radius: 12px; font-weight: 600; font-size: 0.9rem; padding: 10px 16px; border: none; transition: all 0.3s ease; }
+        .btn-primary { background: var(--primary-orange); color: white; }
+        .btn-primary:hover { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4); }
+        .btn-danger { background: #FF4757; color: white; }
+        .btn-danger:hover { background: #FF3742; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4); }
+
+        /* Empty state */
+        .empty-state { text-align: center; padding: 4rem 2rem; color: var(--gray); }
+        .empty-state svg { width: 80px; height: 80px; fill: var(--primary-orange); margin-bottom: 1rem; }
+
+        @media (max-width: 768px) { .main-container { padding: 1rem; } .card-actions { flex-direction: column; } }
+

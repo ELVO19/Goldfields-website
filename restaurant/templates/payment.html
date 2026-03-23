@@ -1,0 +1,450 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - {{ dish.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-orange: #FF6B35;
+            --orange-light: #FF8C42;
+            --orange-dark: #E55A2B;
+            --black: #0F0F0F;
+            --dark-gray: #1A1A1A;
+            --darker-gray: #111111;
+            --light-gray: #B0B3B8;
+            --text-light: #E5E7EB;
+            --text-muted: #9CA3AF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-gray) 0%, var(--black) 100%);
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            color: var(--text-light);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .checkout-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(255,107,53,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,107,53,0.08) 0%, transparent 50%),
+                linear-gradient(135deg, var(--dark-gray) 0%, var(--black) 100%);
+            z-index: -1;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .shape {
+            position: absolute;
+            background: linear-gradient(45deg, var(--primary-orange), var(--orange-light));
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) { width: 80px; height: 80px; top: 20%; left: 10%; animation-delay: 0s; }
+        .shape:nth-child(2) { width: 50px; height: 50px; top: 60%; right: 15%; animation-delay: 4s; }
+        .shape:nth-child(3) { width: 120px; height: 120px; bottom: 20%; left: 20%; animation-delay: 8s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+            33% { transform: translateY(-20px) rotate(120deg) scale(1.1); }
+            66% { transform: translateY(-10px) rotate(240deg) scale(0.9); }
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .checkout-card {
+            background: linear-gradient(145deg, var(--darker-gray), var(--dark-gray));
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow:
+                0 25px 60px rgba(0,0,0,0.5),
+                0 0 40px rgba(255, 107, 53, 0.2);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+            animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Close Button */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+            z-index: 10;
+        }
+
+        .close-btn:hover {
+            background: #ef4444;
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 12px 35px rgba(239, 68, 68, 0.6);
+        }
+
+        .close-btn:active {
+            transform: scale(0.95) rotate(90deg);
+        }
+
+        .checkout-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-orange), var(--orange-light), var(--primary-orange));
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.8);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dish-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            padding-top: 1rem;
+            position: relative;
+        }
+
+        .dish-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            background: linear-gradient(45deg, var(--primary-orange), var(--orange-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+            position: relative;
+        }
+
+        @keyframes titleGlow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.5)); }
+            to { filter: drop-shadow(0 0 25px rgba(255, 107, 53, 0.9)); }
+        }
+
+        .dish-info {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 1.5rem;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .dish-info p {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+
+        .dish-info strong {
+            color: var(--primary-orange);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .form-label {
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            background: var(--black);
+            border: 2px solid rgba(55, 65, 81, 0.5);
+            border-radius: 16px;
+            padding: 18px 25px;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-orange);
+            box-shadow:
+                0 0 0 4px rgba(255, 107, 53, 0.2),
+                0 0 30px rgba(255, 107, 53, 0.15);
+            transform: translateY(-2px);
+            background: var(--darker-gray);
+            color: var(--text-light);
+            outline: none;
+        }
+
+        /* Pay Button */
+        .pay-btn {
+            background: linear-gradient(135deg, var(--primary-orange), var(--orange-light));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Roboto', sans-serif;
+            cursor: pointer;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.4);
+            margin-top: 1rem;
+        }
+
+        .pay-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.7s ease;
+        }
+
+        .pay-btn:hover::before {
+            left: 100%;
+        }
+
+        .pay-btn:hover {
+            background: linear-gradient(135deg, var(--orange-dark), var(--primary-orange));
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 25px 60px rgba(255, 107, 53, 0.6);
+        }
+
+        .pay-btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        /* Security Badge */
+        .security-badge {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .security-badge i {
+            color: var(--primary-orange);
+            margin-right: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .checkout-card {
+                margin: 1rem;
+                padding: 2rem 1.5rem;
+            }
+
+            .dish-header h2 {
+                font-size: 2rem;
+            }
+
+            .close-btn {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 107, 53, 0.2);
+            border-top: 4px solid var(--primary-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="checkout-bg"></div>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="checkout-card">
+            <!-- Close Button -->
+            <button class="close-btn" onclick="closeCheckout()" title="Close">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="dish-header">
+                <h2>Checkout</h2>
+                <div class="dish-info">
+                    <p><strong>{{ dish.name }}</strong></p>
+                    <p class="mb-0">KES {{ dish.price }}</p>
+                </div>
+            </div>
+
+            <form method="POST" action="{% url 'payment' dish.id %}" id="checkoutForm">
+                {% csrf_token %}
+                <input type="hidden" name="amount" value="{{ dish.price }}">
+
+                <div class="mb-4">
+                    <label class="form-label">Your Full Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" name="phone" class="form-control" placeholder="2547XXXXXXXX" required>
+                </div>
+
+                <button type="submit" class="pay-btn">
+                    <span class="btn-text">Pay Now KES {{ dish.price }}</span>
+                    <span class="btn-loading" style="display: none;">
+                        <div class="spinner"></div>
+                        Processing...
+                    </span>
+                </button>
+
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    Secure checkout • Encrypted payment
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Close checkout functionality
+        function closeCheckout() {
+            if (confirm('Are you sure you want to cancel this order?')) {
+                // Redirect to menu or previous page
+                window.history.back();
+                // Alternative: window.location.href = "{% url 'menu' %}";
+            }
+        }
+
+        // Form submission with loading state
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            const btn = this.querySelector('.pay-btn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'block';
+
+            // Reset after 3 seconds (or handle actual submission)
+            setTimeout(() => {
+                btn.disabled = false;
+                btnText.style.display = 'block';
+                btnLoading.style.display = 'none';
+            }, 3000);
+        });
+
+        // Input focus animations
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = '';
+            });
+        });
+
+
+
+        // Close button keyboard accessibility (Escape key)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeCheckout();
+            }
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

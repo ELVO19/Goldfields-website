@@ -1,0 +1,496 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transaction Report – Nexxa Hotels</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <style>
+    :root {
+      --primary-red: #DC2626;
+      --red-light:   #EF4444;
+      --red-dark:    #B91C1C;
+      --black:       #0F0F0F;
+      --dark-gray:   #1F1F1F;
+      --gray:        #9CA3AF;
+      --light-gray:  #374151;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      background: linear-gradient(135deg, var(--dark-gray) 0%, var(--black) 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      color: #E5E7EB;
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      background: var(--black) !important;
+      box-shadow: 0 2px 20px rgba(220, 38, 38, 0.25);
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--red-dark);
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--primary-red) !important;
+      text-decoration: none;
+      text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+    }
+
+    .nav-link {
+      color: var(--gray) !important;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active-link {
+      color: var(--primary-red) !important;
+      text-shadow: 0 0 8px rgba(220, 38, 38, 0.4);
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      padding: 2.5rem 0 1.5rem;
+    }
+
+    .page-header h2 {
+      color: var(--primary-red);
+      font-weight: 700;
+      font-size: 2.5rem;
+      text-shadow: 0 0 15px rgba(220, 38, 38, 0.3);
+      margin-bottom: .25rem;
+    }
+
+    .page-header .meta {
+      color: var(--gray);
+      font-size: .85rem;
+    }
+
+    .page-header .meta strong { color: var(--red-light); }
+
+    /* ── Stats ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: var(--dark-gray);
+      border: 1px solid var(--light-gray);
+      border-radius: 16px;
+      padding: 1.4rem 1.6rem;
+      position: relative;
+      overflow: hidden;
+      transition: all .3s ease;
+    }
+
+    .stat-card:hover {
+      border-color: var(--primary-red);
+      box-shadow: 0 8px 30px rgba(220, 38, 38, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-red), var(--red-light));
+    }
+
+    .stat-label {
+      font-size: .7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: .4rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #F9FAFB;
+      line-height: 1;
+    }
+
+    .stat-value.accent { color: var(--red-light); }
+
+    .stat-sub {
+      font-size: .72rem;
+      color: var(--light-gray);
+      margin-top: .3rem;
+    }
+
+    /* ── Tabs ── */
+    .report-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--light-gray);
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--gray);
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .8rem 1.5rem;
+      cursor: pointer;
+      transition: color .2s, border-color .2s;
+      margin-bottom: -1px;
+    }
+
+    .tab-btn:hover  { color: #F9FAFB; }
+    .tab-btn.active { color: var(--red-light); border-bottom-color: var(--red-light); }
+
+    .tab-panel        { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Section heading ── */
+    .section-heading {
+      color: var(--primary-red);
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .section-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--light-gray), transparent);
+    }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: var(--dark-gray);
+      border: 1px solid var(--light-gray);
+      border-radius: 16px;
+      overflow: hidden;
+      overflow-x: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+
+    thead {
+      background: linear-gradient(135deg, var(--red-dark), var(--primary-red));
+    }
+
+    thead th {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #fff;
+      padding: .85rem 1.1rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+      transition: background .15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:nth-child(even) { background: rgba(0,0,0,.2); }
+    tbody tr:hover { background: rgba(220, 38, 38, 0.07); }
+
+    tbody td {
+      padding: .8rem 1.1rem;
+      color: #ccc;
+      vertical-align: middle;
+      white-space: nowrap;
+      font-size: .8rem;
+    }
+
+    td.name-col {
+      font-weight: 600;
+      color: #F9FAFB;
+      font-size: .85rem;
+    }
+
+    .amount-col {
+      color: var(--red-light);
+      font-weight: 700;
+    }
+
+    /* ── Badges ── */
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .22rem .75rem;
+      border-radius: 50px;
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .badge-status::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .badge-pending   { background:#1f1000; color:#e08000; border:1px solid #5c3800; }
+    .badge-confirmed { background:#001f07; color:#00d060; border:1px solid #005520; }
+    .badge-cancelled { background:#1f0000; color:#ff4040; border:1px solid #660000; }
+    .badge-preparing { background:#001020; color:#4090ff; border:1px solid #003060; }
+    .badge-ready     { background:#100f00; color:#d0c000; border:1px solid #504800; }
+    .badge-delivered { background:#111;    color:#888;    border:1px solid #333;    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--gray);
+      background: rgba(31,31,31,.5);
+      border-radius: 16px;
+      border: 1px solid var(--light-gray);
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; opacity: .3; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--light-gray);
+      font-size: .72rem;
+      letter-spacing: .08em;
+      border-top: 1px solid rgba(55,65,81,.4);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .page-header h2 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ NAVBAR ═══════════ -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand" href="{% url 'admin_page' %}">🍽️ Nexxa Hotels Admin Panel</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto align-items-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="{% url 'add_dish' %}">Add Dish</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'admin_reservations' %}">Reservations</a></li>
+        <li class="nav-item"><a class="nav-link active-link" href="{% url 'reports' %}">Reports</a></li>
+        <li><a href="{% url 'logout' %}" class="btn btn-danger ms-2">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════ CONTENT ═══════════ -->
+<div class="container-fluid px-4">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <h2>Transaction Report</h2>
+    <div class="meta">
+      Generated: <strong>{% now "d M Y, H:i" %}</strong>
+      &nbsp;·&nbsp; Admin: <strong>{{ request.user.username }}</strong>
+      &nbsp;·&nbsp; Period: <strong>All Time</strong>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Payments</div>
+      <div class="stat-value accent">{{ payments.count }}</div>
+      <div class="stat-sub">all records</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Revenue (KES)</div>
+      <div class="stat-value accent">{{ payments_total|default:"0" }}</div>
+      <div class="stat-sub">confirmed payments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending Payments</div>
+      <div class="stat-value accent">{{ pending_payments }}</div>
+      <div class="stat-sub">awaiting confirmation</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Orders</div>
+      <div class="stat-value">{{ orders.count }}</div>
+      <div class="stat-sub">all statuses</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Reservations</div>
+      <div class="stat-value">{{ reservations.count }}</div>
+      <div class="stat-sub">all records</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="report-tabs">
+    <button class="tab-btn active" onclick="switchTab(event,'payments')">Payments</button>
+    <button class="tab-btn" onclick="switchTab(event,'orders')">Orders</button>
+    <button class="tab-btn" onclick="switchTab(event,'reservations')">Reservations</button>
+  </div>
+
+  <!-- ══════ PAYMENTS ══════ -->
+  <div id="tab-payments" class="tab-panel active">
+    <div class="section-heading">Payment Records</div>
+    {% if payments %}
+    <div class="table-wrap mb-4">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>User</th><th>Phone</th>
+            <th>Amount (KES)</th><th>Checkout Request ID</th>
+            <th>Status</th><th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in payments %}
+          <tr>
+            <td>{{ p.id }}</td>
+            <td class="name-col">{{ p.user.get_full_name|default:p.user.username }}</td>
+            <td>{{ p.phone }}</td>
+            <td class="amount-col">{{ p.amount|floatformat:0 }}</td>
+            <td>{{ p.check_request_id|default:"—" }}</td>
+            <td><span class="badge-status badge-{{ p.status|lower }}">{{ p.status }}</span></td>
+            <td>{{ p.created_at|date:"d M Y, H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state mb-4">
+      <div class="icon">💳</div>
+      No payment records found.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ══════ ORDERS ══════ -->
+  <div id="tab-orders" class="tab-panel">
+    <div class="section-heading">Order Records</div>
+    {% if orders %}
+    <div class="table-wrap mb-4">
+      <table>
+        <thead>
+          <tr>
+            <th>Order #</th><th>Customer</th><th>Items</th>
+            <th>Total (KES)</th><th>Status</th>
+            <th>Notes</th><th>Placed</th><th>Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in orders %}
+          <tr>
+            <td>{{ o.id }}</td>
+            <td class="name-col">{{ o.user.get_full_name|default:o.user.username }}</td>
+            <td>
+              {% for item in o.items.all %}
+                {{ item.quantity }}× {{ item.dish.name }}{% if not forloop.last %}, {% endif %}
+              {% empty %}—{% endfor %}
+            </td>
+            <td class="amount-col">{{ o.total|floatformat:2 }}</td>
+            <td><span class="badge-status badge-{{ o.status|lower }}">{{ o.status }}</span></td>
+            <td>{{ o.notes|default:"—"|truncatechars:40 }}</td>
+            <td>{{ o.created_at|date:"d M Y, H:i" }}</td>
+            <td>{{ o.updated_at|date:"d M Y, H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state mb-4">
+      <div class="icon">🧾</div>
+      No order records found.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ══════ RESERVATIONS ══════ -->
+  <div id="tab-reservations" class="tab-panel">
+    <div class="section-heading">Reservation Records</div>
+    {% if reservations %}
+    <div class="table-wrap mb-4">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Guest</th><th>Phone</th>
+            <th>Date</th><th>Time</th><th>Guests</th>
+            <th>Table Pref.</th><th>Occasion</th>
+            <th>Status</th><th>Table No.</th><th>Booked</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reservations %}
+          <tr>
+            <td>{{ r.id }}</td>
+            <td class="name-col">{{ r.full_name }}</td>
+            <td>{{ r.phone }}</td>
+            <td>{{ r.date|date:"d M Y" }}</td>
+            <td>{{ r.time|time:"H:i" }}</td>
+            <td>{{ r.guests }}</td>
+            <td>{{ r.get_table_preference_display }}</td>
+            <td>{{ r.get_occasion_display|default:"—" }}</td>
+            <td><span class="badge-status badge-{{ r.status|lower }}">{{ r.status }}</span></td>
+            <td>{{ r.table_number }}</td>
+            <td>{{ r.created_at|date:"d M Y, H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state mb-4">
+      <div class="icon">📅</div>
+      No reservation records found.
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<footer>
+  © {% now "Y" %} Nexxa Hotels Admin &nbsp;·&nbsp; Transaction Report &nbsp;·&nbsp; Confidential
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function switchTab(e, name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+</script>
+</body>
+</html>

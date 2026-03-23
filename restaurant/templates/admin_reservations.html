@@ -1,0 +1,249 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reservations - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --red-light: #EF4444;
+            --red-dark: #B91C1C;
+            --black: #0F0F0F;
+            --dark-gray: #1F1F1F;
+            --light-gray: #374151;
+            --gray: #9CA3AF;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-gray) 0%, var(--black) 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            color: #E5E7EB;
+        }
+
+        .navbar {
+            background: var(--black) !important;
+            box-shadow: 0 2px 20px rgba(220, 38, 38, 0.25);
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--red-dark);
+        }
+        .navbar-brand { font-weight: 700; font-size: 1.5rem; color: var(--primary-red) !important; text-decoration: none; text-shadow: 0 0 10px rgba(220,38,38,0.5); }
+        .nav-link { color: var(--gray) !important; font-weight: 500; transition: all 0.3s; }
+        .nav-link:hover, .nav-link.active-link { color: var(--primary-red) !important; }
+
+        .main-container { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+
+        h2 { color: var(--primary-red); font-weight: 700; font-size: 2.5rem; text-shadow: 0 0 15px rgba(220,38,38,0.3); margin-bottom: 0.25rem; }
+        .page-sub { color: var(--gray); margin-bottom: 2rem; }
+
+        .section-label {
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--primary-red);
+            margin: 2rem 0 1rem; display: flex; align-items: center; gap: 10px;
+        }
+        .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--light-gray), transparent); }
+
+        /* ── Table Grid ── */
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .table-card {
+            background: var(--dark-gray); border-radius: 18px; padding: 1.5rem 1rem;
+            text-align: center; border: 1px solid var(--light-gray);
+            position: relative; overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+        }
+        .table-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+        }
+        .table-card.reserved::before  { background: linear-gradient(90deg, var(--primary-red), var(--red-light)); box-shadow: 0 0 10px rgba(220,38,38,0.6); }
+        .table-card.available::before { background: linear-gradient(90deg, #16A34A, #4ADE80); box-shadow: 0 0 10px rgba(34,197,94,0.6); }
+        .table-card.pending::before   { background: linear-gradient(90deg, #B45309, #FCD34D); box-shadow: 0 0 10px rgba(234,179,8,0.6); }
+
+        .table-card:hover { transform: translateY(-6px); }
+        .table-card.reserved:hover  { border-color: var(--primary-red); box-shadow: 0 20px 45px rgba(220,38,38,0.2); }
+        .table-card.available:hover { border-color: #4ADE80;            box-shadow: 0 20px 45px rgba(34,197,94,0.2); }
+        .table-card.pending:hover   { border-color: #FCD34D;            box-shadow: 0 20px 45px rgba(234,179,8,0.2); }
+
+        .table-icon   { font-size: 1.6rem; margin-bottom: 0.4rem; display: block; }
+        .table-number { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+        .table-card.reserved  .table-number { color: var(--red-light); }
+        .table-card.available .table-number { color: #4ADE80; }
+        .table-card.pending   .table-number { color: #FCD34D; }
+
+        .table-status-pill {
+            display: inline-block; font-size: 0.7rem; font-weight: 700;
+            padding: 3px 12px; border-radius: 50px;
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .pill-reserved  { background: rgba(220,38,38,0.15);  color: var(--red-light); border: 1px solid rgba(220,38,38,0.35); }
+        .pill-available { background: rgba(34,197,94,0.15);  color: #4ADE80;          border: 1px solid rgba(34,197,94,0.35); }
+        .pill-pending   { background: rgba(234,179,8,0.15);  color: #FCD34D;          border: 1px solid rgba(234,179,8,0.35); }
+
+        .table-guest { color: var(--gray); font-size: 0.75rem; margin-top: 0.5rem; line-height: 1.4; }
+
+        /* ── Reservation list ── */
+        .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+        .filter-tab {
+            background: #111827; border: 1px solid var(--light-gray); border-radius: 50px;
+            color: var(--gray); padding: 6px 18px; font-size: 0.85rem; font-weight: 500;
+            text-decoration: none; transition: all 0.25s;
+        }
+        .filter-tab:hover, .filter-tab.active { border-color: var(--primary-red); color: var(--primary-red); background: rgba(220,38,38,0.1); }
+
+        .res-card {
+            background: var(--dark-gray); border: 1px solid var(--light-gray);
+            border-radius: 18px; padding: 1.25rem 1.5rem; margin-bottom: 1rem;
+            position: relative; overflow: hidden; transition: all 0.3s ease;
+            display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center;
+        }
+        .res-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .res-card.status-pending::before   { background: linear-gradient(90deg,#EAB308,#FCD34D); }
+        .res-card.status-confirmed::before { background: linear-gradient(90deg,#16A34A,#4ADE80); }
+        .res-card.status-cancelled::before { background: linear-gradient(90deg,var(--red-dark),var(--primary-red)); }
+        .res-card:hover { transform: translateY(-3px); border-color: var(--primary-red); box-shadow: 0 12px 35px rgba(220,38,38,0.15); }
+
+        .res-table-badge {
+            display: inline-block; background: rgba(220,38,38,0.15); color: var(--red-light);
+            border: 1px solid rgba(220,38,38,0.3); border-radius: 6px;
+            font-size: 0.78rem; font-weight: 700; padding: 2px 10px; margin-bottom: 0.4rem;
+        }
+        .res-name  { font-weight: 700; font-size: 1rem; color: #F9FAFB; margin-bottom: 0.2rem; }
+        .res-meta  { color: var(--gray); font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 12px; }
+
+        .badge-status {
+            font-size: 0.75rem; font-weight: 700; padding: 6px 16px; border-radius: 50px;
+            text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+        }
+        .badge-pending   { background: rgba(234,179,8,0.15);  color: #FCD34D; border: 1px solid rgba(234,179,8,0.4); }
+        .badge-confirmed { background: rgba(34,197,94,0.15);  color: #4ADE80; border: 1px solid rgba(34,197,94,0.4); }
+        .badge-cancelled { background: rgba(220,38,38,0.15);  color: var(--red-light); border: 1px solid rgba(220,38,38,0.4); }
+
+        .res-actions { display: flex; gap: 8px; margin-top: 0.75rem; flex-wrap: wrap; }
+        .btn-confirm {
+            background: linear-gradient(135deg,#16A34A,#4ADE80); color: white;
+            border: none; border-radius: 8px; padding: 6px 16px;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.25s;
+        }
+        .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(34,197,94,0.4); }
+        .btn-cancel-res {
+            background: rgba(220,38,38,0.15); color: var(--red-light);
+            border: 1px solid rgba(220,38,38,0.3); border-radius: 8px;
+            padding: 6px 16px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.25s;
+        }
+        .btn-cancel-res:hover { background: rgba(220,38,38,0.3); transform: translateY(-2px); }
+
+        .empty-state {
+            text-align: center; padding: 3rem 2rem; color: var(--gray);
+            background: rgba(31,31,31,0.5); border-radius: 16px; border: 1px solid var(--light-gray);
+        }
+
+        @media (max-width: 600px) {
+            .res-card { grid-template-columns: 1fr; }
+            .table-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">🍽️ Nexxa Hotels</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'admin_page' %}">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'add_dish' %}">Add Dish</a></li>
+                <li class="nav-item"><a class="nav-link active-link" href="{% url 'admin_reservations' %}">Reservations</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'reports' %}">Reports</a></li>
+                <li><a href="{% url 'logout' %}" class="btn btn-danger ms-2">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="main-container">
+    <h2>Reservations</h2>
+    <p class="page-sub">Live table status and all bookings.</p>
+
+    <!-- ── Numbered Table Cards ── -->
+    <div class="section-label">Table Status (Today)</div>
+    <div class="table-grid">
+        {% for table in tables %}
+        <div class="table-card {{ table.state }}">
+            <span class="table-icon">🍽️</span>
+            <div class="table-number">T{{ table.number }}</div>
+            <span class="table-status-pill pill-{{ table.state }}">
+                {% if table.state == 'reserved' %}Reserved
+                {% elif table.state == 'pending' %}Pending
+                {% else %}Available{% endif %}
+            </span>
+            {% if table.guest %}
+                <div class="table-guest">{{ table.guest }}<br>{{ table.time }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- ── All Reservations ── -->
+    <div class="section-label">All Bookings</div>
+
+    <div class="filter-tabs">
+        <a href="?status=all"       class="filter-tab {% if status_filter == 'all' or not status_filter %}active{% endif %}">All ({{ total_count }})</a>
+        <a href="?status=pending"   class="filter-tab {% if status_filter == 'pending' %}active{% endif %}">⏳ Pending ({{ pending_count }})</a>
+        <a href="?status=confirmed" class="filter-tab {% if status_filter == 'confirmed' %}active{% endif %}">✓ Confirmed ({{ confirmed_count }})</a>
+        <a href="?status=cancelled" class="filter-tab {% if status_filter == 'cancelled' %}active{% endif %}">✕ Cancelled ({{ cancelled_count }})</a>
+    </div>
+
+    {% if reservations %}
+        {% for res in reservations %}
+        <div class="res-card status-{{ res.status }}">
+            <div>
+                <span class="res-table-badge">Table {{ res.table_number }}</span>
+                <div class="res-name">{{ res.full_name }}</div>
+                <div class="res-meta">
+                    <span>📅 {{ res.date }}</span>
+                    <span>🕐 {{ res.time }}</span>
+                    <span>👥 {{ res.guests }} guest{{ res.guests|pluralize }}</span>
+                    <span>📞 {{ res.phone }}</span>
+                    {% if res.occasion %}<span>🎉 {{ res.get_occasion_display }}</span>{% endif %}
+                </div>
+                {% if res.notes %}
+                    <div style="color:#9CA3AF;font-size:0.82rem;margin-top:0.4rem;">📝 {{ res.notes }}</div>
+                {% endif %}
+                <div class="res-actions">
+                    {% if res.status != 'confirmed' %}
+                    <form method="POST" action="{% url 'update_reservation_status' res.id %}">
+                        {% csrf_token %}<input type="hidden" name="status" value="confirmed">
+                        <button type="submit" class="btn-confirm">✓ Confirm</button>
+                    </form>
+                    {% endif %}
+                    {% if res.status != 'cancelled' %}
+                    <form method="POST" action="{% url 'update_reservation_status' res.id %}">
+                        {% csrf_token %}<input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="btn-cancel-res">✕ Cancel</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            <span class="badge-status badge-{{ res.status }}">{{ res.status }}</span>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div style="font-size:3rem;margin-bottom:1rem;">🗓️</div>
+            <h5 style="color:#F9FAFB;">No reservations found</h5>
+            <p>Reservations will appear here once guests book.</p>
+        </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
